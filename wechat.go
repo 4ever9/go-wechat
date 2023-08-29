@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/imroc/req/v3"
 	"github.com/patrickmn/go-cache"
-	"golang.org/x/exp/slog"
 	"time"
 )
 
@@ -82,7 +81,6 @@ func (we *Wechat) DecryptWeComMsg(msgSign, timestamp, nonce string, body []byte)
 		return nil, fmt.Errorf("get messages: %w", err)
 	}
 
-	slog.Info("next cursor", slog.Any("ret", msgRet), slog.String("cursor", msgRet.NextCursor))
 	we.nextCursor = msgRet.NextCursor
 
 	if isRetry(msgSign) {
@@ -120,12 +118,9 @@ func (we *Wechat) getMsgs(accessToken, msgToken string) (*MsgRet, error) {
 	args := map[string]string{
 		"token": msgToken,
 	}
-	slog.Info("get cursor", slog.String("ccc", we.nextCursor))
 	if we.nextCursor != "" {
-		slog.Info("set", slog.String("key", we.nextCursor))
 		args["cursor"] = we.nextCursor
 	}
-	slog.Info("get msgs(http)", slog.String("url", url), slog.Any("args", args))
 	_, err := we.httpClient.R().
 		SetBody(args).
 		SetSuccessResult(&msgRet).
@@ -133,7 +128,6 @@ func (we *Wechat) getMsgs(accessToken, msgToken string) (*MsgRet, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("access token: %s, msg token: %s", accessToken, msgToken)
 
 	return msgRet, nil
 }
