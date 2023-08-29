@@ -82,6 +82,7 @@ func (we *Wechat) DecryptWeComMsg(msgSign, timestamp, nonce string, body []byte)
 		return nil, fmt.Errorf("get messages: %w", err)
 	}
 
+	slog.Info("next cursor", slog.Any("ret", msgRet), slog.String("cursor", msgRet.NextCursor))
 	we.nextCursor = msgRet.NextCursor
 
 	if isRetry(msgSign) {
@@ -119,7 +120,9 @@ func (we *Wechat) getMsgs(accessToken, msgToken string) (*MsgRet, error) {
 	args := map[string]string{
 		"token": msgToken,
 	}
+	slog.Info("get cursor", slog.String("ccc", we.nextCursor))
 	if we.nextCursor != "" {
+		slog.Info("set", slog.String("key", we.nextCursor))
 		args["cursor"] = we.nextCursor
 	}
 	slog.Info("get msgs(http)", slog.String("url", url), slog.Any("args", args))
