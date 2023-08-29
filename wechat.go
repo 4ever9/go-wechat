@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/imroc/req/v3"
 	"github.com/patrickmn/go-cache"
+	"golang.org/x/exp/slog"
 	"time"
 )
 
@@ -81,11 +82,11 @@ func (we *Wechat) DecryptWeComMsg(msgSign, timestamp, nonce string, body []byte)
 		return nil, fmt.Errorf("get messages: %w", err)
 	}
 
+	we.nextCursor = msgRet.NextCursor
+
 	if isRetry(msgSign) {
 		return nil, nil
 	}
-
-	we.nextCursor = msgRet.NextCursor
 
 	return msgRet, nil
 }
@@ -121,6 +122,7 @@ func (we *Wechat) getMsgs(accessToken, msgToken string) (*MsgRet, error) {
 	if we.nextCursor != "" {
 		args["cursor"] = we.nextCursor
 	}
+	slog.Info("get msgs(http)", slog.String("url", url), slog.Any("args", args))
 	_, err := we.httpClient.R().
 		SetBody(args).
 		SetSuccessResult(&msgRet).
