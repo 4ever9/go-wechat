@@ -119,6 +119,7 @@ func (we *Wechat) getMsgs(accessToken, msgToken string) (*MsgRet, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("access token: %s, msg token: %s", accessToken, msgToken)
 
 	return msgRet, nil
 }
