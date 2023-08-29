@@ -22,7 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
 	gowechat "github.com/4ever9/go-wechat"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -56,11 +55,6 @@ to quickly create a Cobra application.`,
 			timestamp := ctx.Query("timestamp")
 			nonce := ctx.Query("nonce")
 			echoStr := ctx.Query("echostr")
-
-			fmt.Println(msgSign)
-			fmt.Println(timestamp)
-			fmt.Println(nonce)
-			fmt.Println(echoStr)
 
 			we := gowechat.New("", "", "", "")
 			decoded, err := we.CheckWeComSign(msgSign, timestamp, nonce, echoStr)
