@@ -61,23 +61,23 @@ func (we *Wechat) DecryptWeComMsg(msgSign, timestamp, nonce string, body []byte)
 	crypt := NewWXBizMsgCrypt(we.Token, we.EncodingAESKey, we.CorpId, 1)
 	data, cryptoErr := crypt.DecryptMsg(msgSign, timestamp, nonce, body)
 	if cryptoErr != nil {
-		return nil, fmt.Errorf("%w", cryptoErr)
+		return nil, fmt.Errorf("decrypt message: %w", cryptoErr)
 	}
 	var wechatUserMsg WechatUserMsg
 	err := xml.Unmarshal(data, &wechatUserMsg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unmarshal xml: %w", err)
 	}
 
 	accessToken, err := we.getAccessToken()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get access token: %w", err)
 	}
 
 	msgToken := wechatUserMsg.Token
 	msgRet, err := we.getMsgs(accessToken, msgToken)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get messages: %w", err)
 	}
 
 	if isRetry(msgSign) {
@@ -100,7 +100,7 @@ func (we *Wechat) getAccessToken() (string, error) {
 	var accessToken AccessToken
 	_, err := we.httpClient.R().SetSuccessResult(&accessToken).Get(url)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("get token by url: %w", err)
 	}
 
 	token := accessToken.AccessToken
