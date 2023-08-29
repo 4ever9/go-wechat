@@ -24,6 +24,7 @@ type Wechat struct {
 	CorpId         string
 	CorpSecret     string
 	httpClient     *req.Client
+	nextCursor     string
 }
 
 func New(token, encodingAesKey, corpId, corpSecret string) *Wechat {
@@ -84,6 +85,8 @@ func (we *Wechat) DecryptWeComMsg(msgSign, timestamp, nonce string, body []byte)
 		return nil, nil
 	}
 
+	we.nextCursor = msgRet.NextCursor
+
 	return msgRet, nil
 }
 
@@ -112,8 +115,14 @@ func (we *Wechat) getAccessToken() (string, error) {
 func (we *Wechat) getMsgs(accessToken, msgToken string) (*MsgRet, error) {
 	var msgRet *MsgRet
 	url := "https://qyapi.weixin.qq.com/cgi-bin/kf/sync_msg?access_token=" + accessToken
+	args := map[string]string{
+		"token": msgToken,
+	}
+	if we.nextCursor != "" {
+		args["cursor"] = we.nextCursor
+	}
 	_, err := we.httpClient.R().
-		SetBody(map[string]string{"token": msgToken}).
+		SetBody(args).
 		SetSuccessResult(&msgRet).
 		Post(url)
 	if err != nil {
