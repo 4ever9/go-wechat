@@ -27,13 +27,14 @@ type Wechat struct {
 	nextCursor     string
 }
 
-func New(token, encodingAesKey, corpId, corpSecret string) *Wechat {
+func New(token, encodingAesKey, corpId, corpSecret, nextCursor string) *Wechat {
 	return &Wechat{
 		Token:          token,
 		EncodingAESKey: encodingAesKey,
 		CorpId:         corpId,
 		CorpSecret:     corpSecret,
 		httpClient:     req.C(),
+		nextCursor:     nextCursor,
 	}
 }
 
