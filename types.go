@@ -40,6 +40,12 @@ type Msg struct {
 	Text     struct {
 		Content string `json:"content"`
 	} `json:"text"`
+	Link struct {
+		Title  string `json:"title"`
+		Desc   string `json:"desc"`
+		Url    string `json:"url"`
+		PicUrl string `json:"pic_url"`
+	} `json:"link"`
 	OpenKfid       string `json:"open_kfid"`
 	ExternalUserid string `json:"external_userid"`
 }
